@@ -1,7 +1,7 @@
 "use client";
 
 import { registerUser } from "@/actions/register";
-import { Button, Form, Input } from "@heroui/react";
+import { Button, Form, Input, addToast } from "@heroui/react";
 import { useState } from "react";
 
 interface IProps {
@@ -23,7 +23,22 @@ const RegistrationForm = ({ onClose }: IProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await registerUser(formData);
+    const result = await registerUser(formData);
+
+    if ("error" in result) {
+      addToast({
+        title: "Ошибка регистрации",
+        description: result.error,
+        color: "danger",
+      });
+    } else {
+      addToast({
+        title: "Успешная регистрация",
+        description: "Теперь необходимо выполнить 'Логин'",
+        color: "success",
+      });
+    }
+
     onClose();
   };
   return (

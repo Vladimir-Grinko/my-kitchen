@@ -1,7 +1,7 @@
 "use client";
 
 import { signInWithCredentials } from "@/actions/sign-in";
-import { Button, Form, Input } from "@heroui/react";
+import { Button, Form, Input, addToast } from "@heroui/react";
 import { useState } from "react";
 
 interface IProps {
@@ -17,9 +17,21 @@ const LoginForm = ({ onClose }: IProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await signInWithCredentials(formData.email, formData.password);
-    window.location.reload();
-    onClose();
+    const result = await signInWithCredentials(
+      formData.email,
+      formData.password
+    );
+
+    if (!result) {
+      addToast({
+        title: "Ошибка авторизации",
+        description: "Неверный ввод данных",
+        color: "danger",
+      });
+    } else {
+      window.location.reload();
+      onClose();
+    }
   };
   return (
     <Form className="w-full" onSubmit={handleSubmit}>

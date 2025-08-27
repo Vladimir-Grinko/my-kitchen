@@ -27,9 +27,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials
           );
 
-          // хеширование пароля
-          // const pwHash = saltAndHashPassword(password);
-
           // существует ли пользователь
           const user = await getUserFromDb(email);
 

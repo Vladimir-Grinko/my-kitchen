@@ -11,11 +11,24 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  Pagination,
 } from "@heroui/react";
+import { useMemo, useState } from "react";
 
 const IngredientsTable = () => {
   const { ingredients, removeIngredient, isLoading } = useIngredientStore();
   const { isAuth } = useAuthStore();
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
+
+  const pages = Math.ceil(ingredients.length / rowsPerPage);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return ingredients.slice(start, end);
+  }, [page, ingredients]);
 
   const handleDelete = async (id: string) => {
     await removeIngredient(id);
@@ -39,11 +52,24 @@ const IngredientsTable = () => {
     <Table
       aria-label="Список ингредиентов"
       classNames={{
-        wrapper: "mt-4",
+        wrapper: "mt-2",
         table: "w-full",
         th: "text-black",
         td: "text-black",
       }}
+      bottomContent={
+        <div className="flex w-full justify-center">
+          <Pagination
+            isCompact
+            showControls
+            showShadow
+            color="secondary"
+            page={page}
+            total={pages}
+            onChange={(page) => setPage(page)}
+          />
+        </div>
+      }
     >
       <TableHeader>
         <TableColumn>Название</TableColumn>
@@ -54,7 +80,7 @@ const IngredientsTable = () => {
         <TableColumn>Действия</TableColumn>
       </TableHeader>
       <TableBody>
-        {ingredients.map((ingredient) => (
+        {items.map((ingredient) => (
           <TableRow key={ingredient.id}>
             <TableCell>{ingredient.name}</TableCell>
             <TableCell>{getCategoryLabel(ingredient.category)}</TableCell>

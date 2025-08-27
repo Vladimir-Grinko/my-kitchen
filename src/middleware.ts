@@ -1,13 +1,22 @@
-import { getToken } from "next-auth/jwt";
+import { getToken, GetTokenParams } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const token = await getToken({
+  let params: GetTokenParams = {
     req: request,
-    secret: process.env.AUTH_SECRET,
-  });
+    secret: process.env.AUTH_SECRET ?? "secret",
+  };
+
+  if (process.env.NODE_ENV === "production") {
+    params = {
+      ...params,
+      cookieName: "_Secure-authjs.session-token",
+    };
+  }
+
+  const token = await getToken(params);
   const protectedRoutes = ["/ingredients", "/recipes/new", "/recipes/:path*"];
 
   if (

@@ -135,7 +135,6 @@ const IngredientForm = () => {
       </div>
 
       <Input
-        isRequired
         name="description"
         placeholder="Введите описание(необязательно)"
         type="text"
